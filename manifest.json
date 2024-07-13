@@ -1,8 +1,9 @@
 {
-    "name": "Калькулятор різниці часу",
-    "short_name": "Час Калк",
-    "description": "Калькулятор для обчислення різниці між двома часовими значеннями",
-    "start_url": "/",
+    "name": "TimeGap",
+    "short_name": "TimeGap",
+    "description": "Calculate the time difference between two moments",
+    "start_url": "https://kolsnartm.github.io/TimeGap/",
+    "scope": "https://kolsnartm.github.io/TimeGap/",
     "display": "standalone",
     "background_color": "#6e8efb",
     "theme_color": "#6e8efb",
@@ -10,6 +11,11 @@
         {
             "src": "time.png",
             "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "time-512.png",
+            "sizes": "512x512",
             "type": "image/png"
         }
     ]
