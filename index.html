@@ -3,43 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TimeGap</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="time.png">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="6e8efb">
-    <meta name="theme-color" content="#6e8efb">
+    <title>Калькулятор часу</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .calculator {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+        }
+
+        .title {
+            color: #2d3748;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .input-group {
+            margin-bottom: 1rem;
+        }
+
+        .label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        .input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            appearance: none;
+        }
+
+        .input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+        }
+
+        .button:hover {
+            background: #5a67d8;
+            transform: translateY(-1px);
+        }
+
+        .button:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: #f7fafc;
+            border-radius: 10px;
+            text-align: center;
+            color: #2d3748;
+            font-weight: 500;
+        }
+
+        @media (max-width: 480px) {
+            .calculator {
+                padding: 1.5rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>TimeGap</h1>
+    <div class="calculator">
+        <h1 class="title">Калькулятор часу</h1>
+        
         <div class="input-group">
-            <label for="time1">Час 1:</label>
-            <input type="time" id="time1" required>
+            <label class="label" for="time1">Перший час</label>
+            <input type="time" id="time1" class="input">
+            <button onclick="setNow()" class="button" style="margin-top: 0.5rem;">Зараз</button>
         </div>
+
         <div class="input-group">
-            <label for="time2">Час 2:</label>
-            <input type="time" id="time2" required>
+            <label class="label" for="time2">Другий час</label>
+            <input type="time" id="time2" class="input">
         </div>
-        <button onclick="calculateTimeDifference()">Розрахувати різницю</button>
-        <div id="result"></div>
-        <div class="switch">
-            <span class="switch-label">24-годинний формат</span>
-            <label class="switch-toggle">
-                <input type="checkbox" id="formatToggle" onchange="toggleTimeFormat()">
-                <span class="slider"></span>
-            </label>
+
+        <button onclick="calculateDifference()" class="button">Порахувати різницю</button>
+        
+        <div class="result" id="result">
+            Результат з'явиться тут
         </div>
     </div>
 
-    <script src="app.js"></script>
     <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('service-worker.js')
-                .then((reg) => console.log('Service worker registered', reg))
-                .catch((err) => console.log('Service worker not registered', err));
+        function setNow() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('time1').value = `${hours}:${minutes}`;
         }
+
+        function calculateDifference() {
+            const time1 = document.getElementById('time1').value;
+            const time2 = document.getElementById('time2').value;
+
+            if (!time1 || !time2) {
+                document.getElementById('result').innerHTML = 'Будь ласка, введіть обидва значення часу';
+                return;
+            }
+
+            const [hours1, minutes1] = time1.split(':').map(Number);
+            const [hours2, minutes2] = time2.split(':').map(Number);
+
+            let diffMinutes = (hours2 * 60 + minutes2) - (hours1 * 60 + minutes1);
+            
+            // Якщо різниця від'ємна, додаємо 24 години
+            if (diffMinutes < 0) {
+                diffMinutes += 24 * 60;
+            }
+
+            const diffHours = Math.floor(diffMinutes / 60);
+            const remainingMinutes = diffMinutes % 60;
+
+            const hoursText = diffHours > 0 ? `${diffHours} год ` : '';
+            const minutesText = remainingMinutes > 0 ? `${remainingMinutes} хв` : '';
+            
+            const resultText = hoursText + minutesText || '0 хв';
+            document.getElementById('result').innerHTML = `Різниця: ${resultText}`;
+        }
+
+        // Автоматичний розрахунок при зміні значень
+        document.getElementById('time1').addEventListener('change', calculateDifference);
+        document.getElementById('time2').addEventListener('change', calculateDifference);
     </script>
 </body>
 </html>
